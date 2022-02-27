@@ -25,7 +25,7 @@ import sys
 import time
 import logging
 
-HOST, PORT = '192.168.1.3', 5060
+HOST, PORT = '0.0.0.0', 5060
 rx_register = re.compile("^REGISTER")
 rx_invite = re.compile("^INVITE")
 rx_ack = re.compile("^ACK")
@@ -253,7 +253,7 @@ class UDPHandler(socketserver.BaseRequestHandler):
         if expires == 0:
             if fromm in registrar:
                 del registrar[fromm]
-                self.sendResponse("200 0K")
+                self.sendResponse("200 OKI")
                 return
         else:
             now = int(time.time())
@@ -265,7 +265,7 @@ class UDPHandler(socketserver.BaseRequestHandler):
         logging.debug("Expires= %d" % expires)
         registrar[fromm]=[contact,self.socket,self.client_address,validity]
         self.debugRegister()
-        self.sendResponse("200 0K")
+        self.sendResponse("200 OKI")
         
     def processInvite(self):
         logging.debug("-----------------")
@@ -273,7 +273,7 @@ class UDPHandler(socketserver.BaseRequestHandler):
         logging.debug("-----------------")
         origin = self.getOrigin()
         if len(origin) == 0 or not origin in registrar:
-            self.sendResponse("400 Bad Request")
+            self.sendResponse("400 Zly request")
             return
         destination = self.getDestination()
         if len(destination) > 0:
@@ -291,9 +291,9 @@ class UDPHandler(socketserver.BaseRequestHandler):
                 logging.info("<<< %s" % data[0])
                 logging.debug("---\n<< server send [%d]:\n%s\n---" % (len(text),text))
             else:
-                self.sendResponse("480 Temporarily Unavailable")
+                self.sendResponse("480 Docasne nedostupny")
         else:
-            self.sendResponse("500 Server Internal Error")
+            self.sendResponse("500 Interna chyba servera")
                 
     def processAck(self):
         logging.debug("--------------")
@@ -321,7 +321,7 @@ class UDPHandler(socketserver.BaseRequestHandler):
         logging.debug("----------------------")
         origin = self.getOrigin()
         if len(origin) == 0 or not origin in registrar:
-            self.sendResponse("400 Bad Request")
+            self.sendResponse("400 Zly request")
             return
         destination = self.getDestination()
         if len(destination) > 0:
@@ -339,9 +339,9 @@ class UDPHandler(socketserver.BaseRequestHandler):
                 logging.info("<<< %s" % data[0])
                 logging.debug("---\n<< server send [%d]:\n%s\n---" % (len(text),text))    
             else:
-                self.sendResponse("406 Not Acceptable")
+                self.sendResponse("406 Neprijatelne")
         else:
-            self.sendResponse("500 Server Internal Error")
+            self.sendResponse("500 Interna chyba servera")
                 
     def processCode(self):
         origin = self.getOrigin()
@@ -385,11 +385,11 @@ class UDPHandler(socketserver.BaseRequestHandler):
             elif rx_update.search(request_uri):
                 self.processNonInvite()
             elif rx_subscribe.search(request_uri):
-                self.sendResponse("200 0K")
+                self.sendResponse("200 OKI")
             elif rx_publish.search(request_uri):
-                self.sendResponse("200 0K")
+                self.sendResponse("200 OKI")
             elif rx_notify.search(request_uri):
-                self.sendResponse("200 0K")
+                self.sendResponse("200 OKI")
             elif rx_code.search(request_uri):
                 self.processCode()
             else:
@@ -420,14 +420,3 @@ def initialize_logger(name):
     logging.info(time.strftime("%a, %d %b %Y %H:%M:%S ", time.localtime()))
     return logging.getLogger(name)
 
-"""
-if __name__ == "__main__":    
-    hostname = socket.gethostname()
-    logging.info(hostname)
-    ipaddress = socket.gethostbyname(hostname)
-    logging.info(ipaddress)
-    recordroute = "Record-Route: <sip:%s:%d;lr>" % (ipaddress,PORT)
-    topvia = "Via: SIP/2.0/UDP %s:%d" % (ipaddress,PORT)
-    server = socketserver.UDPServer((HOST, PORT), UDPHandler)
-    server.serve_forever()
-"""
