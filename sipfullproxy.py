@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# prebrane z https://github.com/tirfil/PySipFullProxy/blob/master/sipfullproxy.py
+
 
 import socketserver
 import re
@@ -417,6 +417,5 @@ class UDPHandler(socketserver.BaseRequestHandler):
 
 def initialize_logger(name):
     logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s',filename='proxy.log',level=logging.INFO,datefmt='%H:%M:%S')
-    logging.info(time.strftime("%a, %d %b %Y %H:%M:%S ", time.localtime()))
     return logging.getLogger(name)
 
